@@ -1,5 +1,6 @@
 package app1.modifier;
 
+import app1.extractor.StringLiteralFilters;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.expr.MethodCallExpr;
@@ -29,6 +30,10 @@ public final class CodeModifier {
             boolean modified = false;
 
             for (StringLiteralExpr literal : compilationUnit.findAll(StringLiteralExpr.class)) {
+                if (!StringLiteralFilters.isInternationalizableLiteral().test(literal)) {
+                    continue;
+                }
+
                 String propertyKey = valueToKey.get(literal.getValue());
                 if (propertyKey != null) {
                     literal.replace(createResourceBundleCall(propertyKey));
@@ -38,10 +43,10 @@ public final class CodeModifier {
 
             if (modified) {
                 compilationUnit.addImport("java.util.ResourceBundle");
-            }
 
-            try (FileWriter writer = new FileWriter(javaFile.toFile(), StandardCharsets.UTF_8)) {
-                writer.write(compilationUnit.toString());
+                try (FileWriter writer = new FileWriter(javaFile.toFile(), StandardCharsets.UTF_8)) {
+                    writer.write(compilationUnit.toString());
+                }
             }
         }
     }

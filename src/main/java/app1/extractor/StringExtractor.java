@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 
 public final class StringExtractor {
 
-    private static final Predicate<String> IS_RELEVANT = StringExtractor::isRelevantString;
+    private static final Predicate<StringLiteralExpr> IS_INTERNATIONALIZABLE =
+            StringLiteralFilters.isInternationalizableLiteral();
 
     private StringExtractor() {
     }
@@ -25,8 +26,8 @@ public final class StringExtractor {
             return StaticJavaParser.parse(javaFile)
                     .findAll(StringLiteralExpr.class)
                     .stream()
+                    .filter(IS_INTERNATIONALIZABLE)
                     .map(StringLiteralExpr::getValue)
-                    .filter(IS_RELEVANT)
                     .toList();
         } catch (IOException e) {
             throw new UncheckedIOException("Impossible de parser le fichier : " + javaFile, e);
@@ -47,16 +48,5 @@ public final class StringExtractor {
                         (existing, duplicate) -> existing,
                         LinkedHashMap::new
                 ));
-    }
-
-    private static boolean isRelevantString(String value) {
-        return !value.isEmpty()
-                && !value.isBlank()
-                && value.length() != 1
-                && !isOnlySpecialCharacters(value);
-    }
-
-    private static boolean isOnlySpecialCharacters(String value) {
-        return value.chars().noneMatch(Character::isLetterOrDigit);
     }
 }
