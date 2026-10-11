@@ -10,7 +10,7 @@ import java.util.List;
 
 public final class TranslationApp {
 
-    private static final String DEFAULT_MODEL = "meta-llama/Meta-Llama-3.1-8B-Instruct";
+    private static final String DEFAULT_MODEL = "ministral-3-8b-instruct-2512";
     private static final String DEFAULT_SOURCE_FILE = "messages.properties";
 
     private TranslationApp() {

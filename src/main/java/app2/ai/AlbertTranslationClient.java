@@ -9,15 +9,11 @@ import java.util.Map;
 public final class AlbertTranslationClient implements TranslationClient {
 
     private static final String ALBERT_BASE_URL = "https://albert.api.etalab.gouv.fr/v1";
-    private static final String API_KEY_ENV = "ALBERT_API_KEY";
     private final ChatModel chatModel;
     private final ObjectMapper objectMapper;
 
     public AlbertTranslationClient(String modelName) {
-        String apiKey = System.getenv(API_KEY_ENV);
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new TranslationException("La variable d'environnement " + API_KEY_ENV + " est absente ou vide.");
-        }
+        String apiKey = AlbertApiKeyLoader.load();
         if (modelName == null || modelName.isBlank()) {
             throw new TranslationException("Le nom du modèle est obligatoire.");
         }
